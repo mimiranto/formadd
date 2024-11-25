@@ -88,7 +88,7 @@ $router->get("/", function(){
 });
 
 $router->get("/articles", function(){
-  Article::getList();
+  var_dump(Article::getList());
 });
 
 $router->get('/articles/:id', function(int $id){
