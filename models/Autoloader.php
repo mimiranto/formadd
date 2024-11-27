@@ -4,7 +4,7 @@ namespace Models;
 
 class Autoloader
 {
-  static function register()
+  public static function register()
   {
     /**
      * On enregistre toutes les classes grâce à l'autoloader.
@@ -12,16 +12,20 @@ class Autoloader
     spl_autoload_register(array(__CLASS__, 'autoload'));
   }
 
-  static function autoload($class)
+  public static function autoload($class)
   {
-    /**
-     * On configure le chemin de chargement de nos classes (ici, les models)
-     */
-    if (strpos($class, __NAMESPACE__ . '\\') === 0) {
-      $class = str_replace(__NAMESPACE__ . '\\', '', $class);
-      // Remplacer les anti-slashes par des slashes si on travaille sous UNIX
-      //$class = str_replace('\\', '/', $class);
-      require_once ROOT . "/models/$class.php";
+    if (strpos($class, "Controllers\\") === 0) {
+      $class = str_replace("Controllers\\", "", $class);
+      if (file_exists(ROOT . "/controllers/$class.php")) {
+        require_once ROOT . "/controllers/$class.php";
+      }
+    }
+
+    if (strpos($class, __NAMESPACE__ . "\\") === 0) {
+      $class = str_replace(__NAMESPACE__ . "\\", "", $class);
+      if (file_exists(ROOT . "/models/$class.php")) {
+        require_once ROOT . "/models/$class.php";
+      }
     }
   }
 }

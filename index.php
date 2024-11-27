@@ -20,8 +20,8 @@ Autoloader::register();
 use Models\BDD;
 use Models\Utils;
 use Models\Article;
-
 use Models\Router;
+use Controllers\ArticlesController ; 
 
 // spl_autoload_register(function ($class) {
 //   $class = ucfirst($class);
@@ -32,12 +32,13 @@ use Models\Router;
 //   }
 // });
 
+
 $article = new Article(BDD::connect());
 
 $article_test = [
-  "title" => "Test",
-  "content" => "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quam qui reprehenderit deserunt dolorem praesentium, autem nihil dolorum officiis officia, ab accusantium cum labore, soluta natus iusto incidunt distinctio minus error?",
-  "author" => "webdevoo"
+  "title" => "Test1",
+  "content" => "test test test ",
+  "author" => "mimiranto"
 ];
 
 /**
@@ -49,19 +50,19 @@ $article_test = [
 //   $article_test["author"]
 // );
 
-// var_dump($article::getList());
+//var_dump($article::getList());
 
-// var_dump($article::getById(9));
+// var_dump($article::getById(10));
 
 // var_dump($article::getLast());
 
-$updated_article = [
-  "id" => 9,
-  "title" => "Test mis à jour",
-  "content" => "Ce contenu a été mis à jour",
-  "author" => "WebdevooUpdated",
-  "created_date" => new \Datetime("now")
-];
+// $updated_article = [
+//   "id" => 5,
+//   "title" => "Test 5 mis à jour",
+//   "content" => "Ce contenu a été mis à jour",
+//   "author" => "MIMIRANTO",
+//   "created_date" => new \Datetime("now")
+// ];
 
 // var_dump($article->update(
 //   $updated_article["id"],
@@ -71,31 +72,52 @@ $updated_article = [
 //   $updated_article["created_date"]->sub(\DateInterval::createFromDateString("1 hour"))->format("Y/m/d H:i:s"),
 // ));
 
-// var_dump($article::getById(9));
+// var_dump($article::getById(5));
 
 // var_dump($article::deleteAll());
 
 // var_dump($article::deleteArticle(11));
 
-Utils::helloWorld();
+
 
 // On instancie le routeur
 $router = new Router();
 
-// On définit les routes
-$router->get("/", function(){
-  echo "Page d'accueil";
-});
+$uri = $_SERVER["REQUEST_URI"];
 
-$router->get("/articles", function(){
-  var_dump(Article::getList());
-});
+switch (true) {
+  case ($uri === "/"):
+    $router->get("/", function () {
+      echo "Page d'accueil";
+    });
+    break;
+    case ($uri === "/articles"):
+    $router->get("/articles", ArticlesController::getList());
+    break;
+    case (preg_match("/^\/articles\/(\d+)$/", $uri )):
+    $router->get($uri, function (int $id) {
+      if (!is_null($id)) {
+        var_dump(Article::getById($id));
+      }
+    });
+    break;
+    case ($uri === "/articles/ajouter" && $_SERVER['REQUEST_METHOD'] === 'GET'):
+      // Afficher le formulaire
+      $router->get("/articles/ajouter", function () {
+          ArticlesController::showForm();
+      });
+      break;
+  
+  case ($uri === "/articles/ajouter" && $_SERVER['REQUEST_METHOD'] === 'POST'):
+      // Traiter le formulaire
+      $router->post("/articles/ajouter", function () {
+          ArticlesController::AddForm();
+      });
+      break;  
+    default:
+      echo "404";
+      break;
+}
 
-$router->get('/articles/:id', function(int $id){
-  if(!is_null($id)){
-    Article::getById($id);
-  }
-});
 
-// On exécute le routeur, sinon il ne fonctionnera pas 😶‍🌫️
 $router->run();

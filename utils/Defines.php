@@ -1,3 +1,3 @@
 <?php
 
-define("ROOT", $_SERVER["DOCUMENT_ROOT"]);
+define(constant_name: "ROOT",value: $_SERVER["DOCUMENT_ROOT"]);

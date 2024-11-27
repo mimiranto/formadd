@@ -88,7 +88,7 @@ class Article{
         Utils::launchException("Une erreur s'est produite lors de la récupération de la liste des articles");
       }
 
-      $datas = $req->fetch(PDO::FETCH_OBJ);
+      $datas = $req->fetchAll(PDO::FETCH_OBJ);
       $req->closeCursor();
 
       if(!$datas){
